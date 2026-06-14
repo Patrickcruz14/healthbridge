@@ -6,7 +6,8 @@ import {
   RiMapPin2Line, RiBookOpenLine, RiUserLine,
   RiLogoutBoxLine, RiSendPlane2Line, RiArrowLeftLine,
   RiVirusLine, RiLungsLine, RiHeartLine,
-  RiShieldCheckLine, RiArrowRightLine
+  RiShieldCheckLine, RiArrowRightLine, RiTimeLine,
+  RiInformationLine, RiAlarmWarningLine, RiStethoscopeLine
 } from 'react-icons/ri'
 
 const navItems = [
@@ -28,6 +29,19 @@ const diseases = [
     gradient: 'linear-gradient(135deg, #1D9E75 0%, #2ECC9A 100%)',
     tagline: 'Ipinagkalat ng lamok na Aedes aegypti',
     description: 'Matuto tungkol sa pagkilala, pag-iwas, at paggamot ng Dengue.',
+    chatTime: '~5 minuto',
+    topics: 6,
+    quickFacts: [
+      'Peak season: Hunyo–Nobyembre',
+      'BAWAL ang Aspirin at Ibuprofen',
+      'Libre ang dengue test sa DOH',
+    ],
+    suggestedQuestions: [
+      'Ano ang symptoms ng dengue?',
+      'Kailan ako dapat pumunta sa ospital?',
+      'Ano ang pagkakaiba ng dengue sa flu?',
+    ],
+    tip: 'BAWAL uminom ng Aspirin o Ibuprofen kung may dengue — nagpapalala ng pagdudugo.',
     systemPrompt: `Ikaw si HealthBot, isang health information assistant ng HealthBridge na espesyalista sa Dengue. Nakikipag-usap ka sa mga Filipinong may limitadong access sa healthcare.
 
 ESTILO NG PAKIKIPAG-USAP:
@@ -79,36 +93,20 @@ HYDRATION:
 - 8-10 baso ng tubig/araw (DOH recommendation)
 - ORS — 1 sachet sa 1 litro ng tubig
 - Coconut water — natural electrolytes
-- Fruit juices — Vitamin C
 - BAWAL: Softdrinks, energy drinks, alak
-
-PAGKAIN NA DAPAT KAININ:
-- Papaya leaves juice — clinically studied para sa platelet count (Philippine Journal of Science 2019)
-- Lugaw, tinapay, crackers
-- Chicken soup
-- Guava juice — mataas sa Vitamin C
-- Saging — potassium
-- BAWAL: Matabang pagkain, maanghang, dark-colored na pagkain
-
-PLATELET MONITORING:
-- Normal: 150,000-450,000
-- Warning: bumaba sa 100,000
-- Critical: bumaba sa 20,000 — kailangan ng platelet transfusion
-- Mag-CBC tuwing araw sa critical phase
 
 PREVENTION — 4S Strategy ng DOH:
 - Search and destroy breeding sites
 - Self-protection (mahabang damit, DEET repellent)
 - Seek early consultation
 - Say no to indiscriminate fogging
-- Peak lamok hours: 6AM-9AM at 3PM-6PM
 
 LIBRE NA SERBISYO:
 - Dengue consultation at blood test — libre sa government hospitals
 - PhilHealth covers dengue hospitalization
 - DOH Hotline: 1555
 
-SOURCES: DOH Philippines Dengue Guidelines 2023, WHO Dengue Guidelines 2023, Philippine Journal of Science, Mayo Clinic, CDC
+SOURCES: DOH Philippines Dengue Guidelines 2023, WHO Dengue Guidelines 2023, Mayo Clinic, CDC
 
 RULES:
 - HINDI nagda-diagnose — nagrerekomenda lang na kumonsulta
@@ -126,6 +124,19 @@ RULES:
     gradient: 'linear-gradient(135deg, #534AB7 0%, #7B6FD4 100%)',
     tagline: 'May LIBRENG gamot sa lahat ng health center',
     description: 'Alamin ang tungkol sa TB — nakakahawa ba? May lunas ba?',
+    chatTime: '~6 minuto',
+    topics: 6,
+    quickFacts: [
+      'LIBRE ang TB gamot sa lahat ng DOTS center',
+      '6 buwan ang treatment — huwag huminto',
+      'Pilipinas #4 sa mundo sa TB burden',
+    ],
+    suggestedQuestions: [
+      'Nakakahawa ba ang TB sa paghawak?',
+      'Libre ba talaga ang gamot sa DOH?',
+      'Ano ang side effects ng TB meds?',
+    ],
+    tip: 'Huwag huminto sa gamot kahit okay na — nagdudulot ng drug-resistant TB (MDR-TB).',
     systemPrompt: `Ikaw si HealthBot, isang health information assistant ng HealthBridge na espesyalista sa Tuberculosis (TB). Nakikipag-usap ka sa mga Filipinong may limitadong access sa healthcare.
 
 ESTILO NG PAKIKIPAG-USAP:
@@ -146,11 +157,6 @@ BASIC INFO:
 - 800,000+ bagong kaso bawat taon sa Pilipinas (DOH 2023)
 - MAGAGAMOT — 95% cure rate kung kumpleto ang treatment
 
-LATENT vs ACTIVE TB:
-- Latent TB: May bacteria pero hindi aktibo, hindi nakakahawa, walang sintomas
-- Active TB: Aktibo ang bacteria, nakakahawa, may sintomas
-- 10% ng latent TB nagiging active — lalo sa mababang immune system
-
 SINTOMAS:
 - Ubo na tumatagal ng 2 linggo o higit (pinaka-classic sign)
 - May dugo sa plema (hemoptysis)
@@ -158,64 +164,25 @@ SINTOMAS:
 - Biglaang pagbaba ng timbang nang walang dahilan
 - Mababang lagnat na paulit-ulit — lalo sa hapon
 - Matinding pagod kahit hindi nag-eehersisyo
-- Sakit ng dibdib kapag humihinga o umuubo
-
-DIAGNOSIS:
-- Sputum smear microscopy — libre sa lahat ng DOTS centers
-- GeneXpert test — mas accurate, libre sa DOH facilities
-- Chest X-ray — libre sa DOTS centers
-- Tuberculin Skin Test (TST) — para sa latent TB
 
 TREATMENT — DOTS PROGRAM:
 - 6 buwan ang standard treatment (DOH/WHO)
-- Intensive phase: 2 buwan — 4 antibiotics (HRZE: Isoniazid, Rifampicin, Pyrazinamide, Ethambutol)
-- Continuation phase: 4 buwan — 2 antibiotics (HR: Isoniazid, Rifampicin)
-- KRITIKAL: Huwag huminto kahit okay na — nagdudulot ng drug-resistant TB
-- Drug-resistant TB (MDR-TB): 18-24 buwan ang treatment, mas mahal at mahirap
-
-PAGKAIN NA DAPAT KAININ (WHO/DOH):
-- High-protein: itlog, karne, isda, beans, tokwa — para sa tissue repair
-- Vitamin A: kamote, kalabasa, karots, spinach — immune support
-- Vitamin C: calamansi, guava, kamatis — antioxidant
-- Zinc: karne, seafood, nuts — immune function
-- Calorie-dense foods: para makabawi ng nawala timbang
-- Kumain ng 5-6 maliit na meals/araw
-
-PAGKAIN NA DAPAT IWASAN:
-- Alak — nagpapalala ng liver damage mula sa TB meds
-- Sigarilyo — nagpapahina ng baga
-- Processed foods — nagpapababa ng immune system
-- Mataas na asukal — nagpapababa ng immune function
-- Tyramine-rich foods habang nag-iinom ng Isoniazid: tuna, red wine, aged cheese
-
-SIDE EFFECTS NG TB MEDS AT MANAGEMENT:
-- Rifampicin: red-orange na ihi/laway — NORMAL, huwag matakot
-- Isoniazid: pamamanhid ng kamay/paa — uminom ng Vitamin B6
-- Pyrazinamide: sakit ng kasukasuan — uminom ng maraming tubig
-- Ethambutol: problema sa paningin — kumonsulta agad sa doktor
-
-PAG-IINGAT SA BAHAY:
-- Magsuot ng face mask — lalo sa enclosed spaces
-- Magbukas ng bintana — proper ventilation nakakatulong
-- Hindi kailangan mag-isolate completely pagkatapos ng 2 linggo ng treatment
-- Mag-cover ng bibig kapag umuubo o bumahing
-- Kailangan magpa-test ang mga kasama sa bahay — libre rin
+- Intensive phase: 2 buwan — 4 antibiotics (HRZE)
+- Continuation phase: 4 buwan — 2 antibiotics (HR)
+- KRITIKAL: Huwag huminto kahit okay na
 
 LIBRE NA SERBISYO:
-- Lahat ng TB medicines — LIBRE sa lahat ng DOTS centers at health centers
+- Lahat ng TB medicines — LIBRE sa lahat ng DOTS centers
 - Diagnosis tests — LIBRE
-- DOH NTP (National Tuberculosis Program) — sumasaklaw sa buong Pilipinas
-- PhilHealth TB DOTS benefit package
 - DOH Hotline: 1555
 
-SOURCES: DOH National TB Program Guidelines 2023, WHO Global TB Report 2023, WHO Treatment Guidelines for Drug-Susceptible TB 2022, CDC TB Guidelines, Philippine Clinical Practice Guidelines on TB
+SOURCES: DOH National TB Program Guidelines 2023, WHO Global TB Report 2023, CDC TB Guidelines
 
 RULES:
 - HINDI nagda-diagnose — nagrerekomenda lang na kumonsulta
 - Hemoptysis o hirap huminga → ER agad
 - Laging i-cite ang source
 - Alisin ang stigma — TB ay hindi kahihiyan, nagagamot ito
-- Kung hindi tungkol sa TB → i-redirect
 - Palaging may follow-up question sa dulo`,
   },
   {
@@ -227,6 +194,19 @@ RULES:
     gradient: 'linear-gradient(135deg, #E65100 0%, #FF8C00 100%)',
     tagline: 'Ang "silent killer" — karamihan walang nararamdaman',
     description: 'Alamin kung bakit mapanganib ang mataas na BP at paano ito kontrolin.',
+    chatTime: '~5 minuto',
+    topics: 6,
+    quickFacts: [
+      '1 sa 4 adult Pilipino ay may hypertension',
+      'Normal BP: wala pang 120/80 mmHg',
+      'Libre ang BP check sa lahat ng BHC',
+    ],
+    suggestedQuestions: [
+      'Ano ang normal na blood pressure?',
+      'Anong pagkain ang nagpapababa ng BP?',
+      'Kailangan ko bang uminom ng maintenance?',
+    ],
+    tip: 'Ang hypertension ay "silent killer" — karamihan walang nararamdaman hanggang may stroke o heart attack na.',
     systemPrompt: `Ikaw si HealthBot, isang health information assistant ng HealthBridge na espesyalista sa Hypertension (Mataas na Blood Pressure). Nakikipag-usap ka sa mga Filipinong may limitadong access sa healthcare.
 
 ESTILO NG PAKIKIPAG-USAP:
@@ -240,137 +220,33 @@ ESTILO NG PAKIKIPAG-USAP:
 KOMPREHENSIBONG KAALAMAN SA HYPERTENSION:
 
 BASIC INFO:
-- Mataas na presyon ng dugo sa mga ugat — persistently 130/80 mmHg o higit (ACC/AHA 2017)
+- Mataas na presyon ng dugo sa mga ugat — persistently 130/80 mmHg o higit
 - "Silent killer" — karamihan walang sintomas hanggang sa may komplikasyon na
 - 1 sa 4 adult Filipinos ay may hypertension (DOH 2023)
-- 60% ay hindi alam na mayroon silang hypertension
 - Leading cause ng stroke at heart attack sa Pilipinas
 
-BP CLASSIFICATION (ACC/AHA 2017 / DOH):
+BP CLASSIFICATION:
 - Normal: wala pang 120/80 mmHg
-- Elevated: 120-129 / wala pang 80 mmHg
-- Stage 1 Hypertension: 130-139 / 80-89 mmHg
-- Stage 2 Hypertension: 140/90 mmHg o higit
+- Stage 1: 130-139 / 80-89 mmHg
+- Stage 2: 140/90 mmHg o higit
 - Hypertensive Crisis: 180/120 mmHg o higit — EMERGENCY
 
-SINTOMAS (kung meron man):
-- Sakit ng ulo — lalo sa likod ng ulo, pag-gising sa umaga
-- Malabo o double ang paningin
-- Palpitations o mabilis na tibok ng puso
-- Pagkahilo o pakiramdam na mabibigla
-- Pagdudugo ng ilong
-- Pangangapos ng hininga
-- Nausea
-
-HYPERTENSIVE CRISIS SYMPTOMS (ER AGAD):
-- BP 180/120+
-- Matinding sakit ng ulo
-- Pagkalito o hindi malinaw ang pag-iisip
-- Pamamanhid ng mukha, kamay, o paa
-- Hirap huminga
-- Sakit ng dibdib
-- Malabo ang paningin
-
-DAHILAN NG HYPERTENSION:
-- Mataas na asin sa pagkain — pinakamalaking factor (WHO)
-- Unhealthy diet — processed foods, mataas na taba
-- Sigarilyo — nagpapahirap sa mga ugat
-- Labis na alak — nagpapataas ng BP
-- Kakulangan ng physical activity
-- Obesity — BMI 25+ ay risk factor
-- Chronic stress
-- Genetics — family history ng hypertension
-- Edad — tumataas ang risk sa edad 40+
-- Diabetes at kidney disease
-
-LIFESTYLE CHANGES (PINAKA-EPEKTIBONG TREATMENT):
-
-1. DASH DIET (Dietary Approaches to Stop Hypertension — NIH):
-- Maraming prutas at gulay
-- Whole grains: brown rice, oatmeal
-- Low-fat dairy
-- Lean protein: isda, manok, beans
-- Nuts at seeds
-- BAWASAN: asin, red meat, sweets, processed foods
-
-2. SODIUM REDUCTION:
-- Target: wala pang 2,300mg sodium/araw (WHO: 2,000mg)
-- 1 kutsarita ng asin = 2,300mg sodium
-- Mga pagkain na mataas sa sodium: patis, toyo, bagoong, instant noodles, processed meats
-- Tips: gumamit ng herbs/spices instead of salt, basahin ang food labels
-
-3. EXERCISE (WHO Physical Activity Guidelines 2020):
-- 150 minutes moderate aerobic activity/linggo
-- Halimbawa: 30 minuto ng mabilis na paglalakad, 5 araw/linggo
-- Resistance training 2x/linggo
-- Nakakapababa ng BP ng 5-8 mmHg
-
-4. WEIGHT MANAGEMENT:
-- Bawat 1kg na nawala = 1 mmHg na pagbaba ng BP
-- Target BMI: 18.5-24.9
-
-5. ALCOHOL LIMITATION:
-- Max 1 drink/araw para sa babae, 2 para sa lalaki
-- Mas maganda kung wala na
-
-6. SMOKING CESSATION:
-- Ang sigarilyo ay nagpapataas ng BP at nagpapalala ng cardiovascular risk
-- DOH Quit Line: 165035
-
-MAINTENANCE MEDICATION:
-- Kailangan ng reseta ng doktor
-- Common medications: Amlodipine, Losartan, Enalapril, Hydrochlorothiazide
-- IMPORTANTE: Huwag huminto kahit okay na ang BP — maintenance ito
-- Huwag mag-adjust ng dose nang walang pahintulot ng doktor
-- Inumin sa tamang oras araw-araw
-
-HOME BP MONITORING:
-- Mag-check ng BP tuwing umaga at gabi
-- Mag-rest ng 5 minuto bago sukatin
-- Dalawang beses sukatin, average ang dalawa
-- I-record ang readings — dalhin sa doktor
-- Target home BP: wala pang 135/85 mmHg
-
-PAGKAIN NA NAKAKATULONG:
-- Bawang — natural ACE inhibitor, nakakapababa ng BP (Journal of Nutrition 2016)
-- Saging — mataas sa potassium, nagba-balance ng sodium
-- Oatmeal — soluble fiber, nakakapababa ng BP
-- Salmon/isda — omega-3 fatty acids
-- Dark chocolate (70%+) — flavonoids nakakatulong
-- Beet juice — nitrates nakakapababa ng BP (British Journal of Nutrition 2013)
-- Hibiscus tea — clinically proven na nakakapababa ng BP (Journal of Hypertension 2010)
-
-PAGKAIN NA DAPAT IWASAN:
-- Asin/sodium — chips, instant noodles, canned goods, fast food
-- Processed meats — tocino, longganisa, hotdog
-- Saturated fats — coconut oil (labis), fatty meats
-- Trans fats — margarine, processed baked goods
-- Alak — nagpapataas ng BP
-- Caffeine — moderate lang (max 2 cups kape/araw)
-
-KOMPLIKASYON NG HINDI NAGAMOT NA HYPERTENSION:
-- Stroke — nangungunang sanhi sa Pilipinas
-- Heart attack
-- Heart failure
-- Kidney disease
-- Vision loss
-- Peripheral artery disease
+LIFESTYLE CHANGES:
+- DASH Diet: maraming prutas, gulay, whole grains
+- Bawasan ang asin: wala pang 2,300mg sodium/araw
+- Exercise: 150 minutes moderate activity/linggo
+- Iwasan ang alak at sigarilyo
 
 LIBRE NA SERBISYO:
 - BP monitoring — libre sa lahat ng barangay health centers
-- Hypertension consultation — libre sa RHUs at government hospitals
-- PhilHealth covers hypertension management
-- Maintenance meds — available sa Botika ng Barangay (subsidized)
 - DOH Hotline: 1555
 
-SOURCES: DOH Philippines Hypertension Guidelines 2020, ACC/AHA Hypertension Guidelines 2017, WHO Hypertension Fact Sheet 2023, DASH Diet (NIH/NHLBI), WHO Physical Activity Guidelines 2020, Journal of Nutrition, British Journal of Nutrition, Journal of Hypertension
+SOURCES: DOH Philippines Hypertension Guidelines 2020, ACC/AHA 2017, WHO 2023
 
 RULES:
 - HINDI nagda-diagnose — nagrerekomenda lang na kumonsulta
 - Hypertensive crisis (180/120+) → ER agad
 - Laging i-cite ang source ng impormasyon
-- I-emphasize na kontrolable ang hypertension sa tamang lifestyle
-- Kung hindi tungkol sa Hypertension → i-redirect
 - Palaging may follow-up question sa dulo`,
   },
 ]
@@ -378,6 +254,11 @@ RULES:
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: 'easeOut' } },
+}
+
+const stagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.08 } },
 }
 
 export default function Chatbot() {
@@ -406,105 +287,76 @@ export default function Chatbot() {
     setIsTyping(true)
 
     try {
-      const response = await fetch(
-        'https://api.groq.com/openai/v1/chat/completions',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`
-          },
-          body: JSON.stringify({
-            model: 'llama-3.3-70b-versatile',
-            messages: [
-              { role: 'system', content: d.systemPrompt },
-              { role: 'user', content: 'Simulan ang conversation. Mag-introduce ka at magtanong para malaman kung ano ang nararamdaman ng user.' }
-            ],
-            temperature: 0.7,
-            max_tokens: 500,
-          })
-        }
-      )
+      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`
+        },
+        body: JSON.stringify({
+          model: 'llama-3.3-70b-versatile',
+          messages: [
+            { role: 'system', content: d.systemPrompt },
+            { role: 'user', content: 'Simulan ang conversation. Mag-introduce ka at magtanong para malaman kung ano ang nararamdaman ng user.' }
+          ],
+          temperature: 0.7,
+          max_tokens: 500,
+        })
+      })
       const data = await response.json()
       const botReply = data.choices?.[0]?.message?.content || 'Kamusta! Ako si HealthBot. Ano ang nararamdaman mo?'
-
       setIsTyping(false)
       setMessages([{ id: Date.now(), role: 'bot', text: botReply }])
       setConversationHistory([
         { role: 'user', content: 'Simulan ang conversation.' },
         { role: 'assistant', content: botReply }
       ])
-    } catch (err) {
+    } catch {
       setIsTyping(false)
-      setMessages([{
-        id: Date.now(),
-        role: 'bot',
-        text: 'Kamusta! Ako si HealthBot, ang iyong gabay para sa ' + d.label + '. Ano ang nararamdaman mo ngayon?'
-      }])
+      setMessages([{ id: Date.now(), role: 'bot', text: 'Kamusta! Ako si HealthBot, ang iyong gabay para sa ' + d.label + '. Ano ang nararamdaman mo ngayon?' }])
     }
-
     setTimeout(() => inputRef.current?.focus(), 100)
   }
 
-  const sendMessage = async () => {
-    if (!input.trim() || isTyping) return
-
-    const userMessage = input.trim()
+  const sendMessage = async (text) => {
+    const userMessage = (text || input).trim()
+    if (!userMessage || isTyping) return
     setInput('')
-
     const newMessages = [...messages, { id: Date.now(), role: 'user', text: userMessage }]
     setMessages(newMessages)
     setIsTyping(true)
-
-    const newHistory = [
-      ...conversationHistory,
-      { role: 'user', content: userMessage }
-    ]
+    const newHistory = [...conversationHistory, { role: 'user', content: userMessage }]
 
     try {
-      const response = await fetch(
-        'https://api.groq.com/openai/v1/chat/completions',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`
-          },
-          body: JSON.stringify({
-            model: 'llama-3.3-70b-versatile',
-            messages: [
-              { role: 'system', content: disease.systemPrompt },
-              ...newHistory
-            ],
-            temperature: 0.7,
-            max_tokens: 500,
-          })
-        }
-      )
+      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`
+        },
+        body: JSON.stringify({
+          model: 'llama-3.3-70b-versatile',
+          messages: [
+            { role: 'system', content: disease.systemPrompt },
+            ...newHistory
+          ],
+          temperature: 0.7,
+          max_tokens: 500,
+        })
+      })
       const data = await response.json()
       const botReply = data.choices?.[0]?.message?.content || 'Pasensya na, hindi ko naintindihan. Ulitin mo nga?'
-
       setIsTyping(false)
       setMessages(prev => [...prev, { id: Date.now(), role: 'bot', text: botReply }])
-      setConversationHistory([
-        ...newHistory,
-        { role: 'assistant', content: botReply }
-      ])
-    } catch (err) {
+      setConversationHistory([...newHistory, { role: 'assistant', content: botReply }])
+    } catch {
       setIsTyping(false)
-      setMessages(prev => [...prev, {
-        id: Date.now(),
-        role: 'bot',
-        text: 'May error sa connection. Subukan ulit.'
-      }])
+      setMessages(prev => [...prev, { id: Date.now(), role: 'bot', text: 'May error sa connection. Subukan ulit.' }])
     }
   }
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      sendMessage()
-    }
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage() }
   }
 
   const reset = () => {
@@ -558,55 +410,145 @@ export default function Chatbot() {
         {/* Disease Selection */}
         {!selectedDisease && (
           <div className="flex-1 overflow-y-auto px-8 py-8">
-            <motion.div variants={fadeUp} initial="hidden" animate="show">
-              <div className="mb-8">
-                <div className="flex items-center gap-2 mb-1">
-                  <RiRobot2Line className="text-[#534AB7] text-xl" />
-                  <h1 className="text-2xl font-semibold text-gray-900">Health Chatbot</h1>
-                </div>
-                <p className="text-sm text-gray-400">Piliin ang sakit na gusto mong pag-usapan. Ang aming AI bot ay makikipag-usap sa iyo sa Filipino.</p>
-              </div>
+            <motion.div variants={stagger} initial="hidden" animate="show">
 
-              <div className="grid grid-cols-3 gap-5 mb-8">
-                {diseases.map((d) => (
+              {/* Header */}
+              <motion.div variants={fadeUp} className="mb-8">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 bg-[#534AB7] rounded-xl flex items-center justify-center">
+                    <RiRobot2Line className="text-white text-xl" />
+                  </div>
+                  <div>
+                    <h1 className="text-2xl font-semibold text-gray-900">Health Chatbot</h1>
+                    <p className="text-sm text-gray-400">Piliin ang sakit na gusto mong pag-usapan sa Filipino</p>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Disease Cards — Option A style */}
+              <motion.div variants={fadeUp} className="flex flex-col gap-4 mb-6">
+                {diseases.map((d, idx) => (
                   <motion.div
                     key={d.id}
-                    whileHover={{ scale: 1.02, boxShadow: '0 12px 32px rgba(0,0,0,0.1)' }}
-                    whileTap={{ scale: 0.98 }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.1 }}
+                    whileHover={{ scale: 1.01, boxShadow: '0 12px 32px rgba(0,0,0,0.1)' }}
+                    whileTap={{ scale: 0.99 }}
                     onClick={() => selectDisease(d.id)}
-                    className="bg-white rounded-2xl overflow-hidden cursor-pointer border border-gray-100"
-                    style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}
+                    className="bg-white rounded-2xl overflow-hidden cursor-pointer border border-gray-100 flex"
+                    style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}
                   >
-                    <div className="h-28 flex items-center justify-center relative overflow-hidden"
+                    {/* Left gradient strip */}
+                    <div className="w-2 shrink-0" style={{ background: d.gradient }} />
+
+                    {/* Icon area */}
+                    <div className="w-28 shrink-0 flex items-center justify-center relative overflow-hidden"
                       style={{ background: d.gradient }}>
-                      <div className="absolute top-[-20px] right-[-20px] w-28 h-28 rounded-full bg-white/10" />
-                      <d.icon className="text-white text-5xl relative z-10" />
+                      <div className="absolute top-[-10px] right-[-10px] w-20 h-20 rounded-full bg-white/10" />
+                      <motion.div
+                        animate={{ scale: [1, 1.08, 1] }}
+                        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: idx * 0.5 }}
+                      >
+                        <d.icon className="text-white text-5xl relative z-10" />
+                      </motion.div>
                     </div>
-                    <div className="p-5">
-                      <h3 className="text-base font-semibold text-gray-900 mb-1">{d.label}</h3>
-                      <p className="text-xs text-gray-400 leading-relaxed mb-3">{d.description}</p>
-                      <div className="text-xs px-2 py-1 rounded-lg inline-block font-medium"
-                        style={{ background: d.lightBg, color: d.color }}>
-                        {d.tagline}
+
+                    {/* Content */}
+                    <div className="flex-1 p-5">
+                      <div className="flex items-start justify-between mb-2">
+                        <div>
+                          <h3 className="text-base font-semibold text-gray-900">{d.label}</h3>
+                          <p className="text-xs text-gray-400 mt-0.5">{d.description}</p>
+                        </div>
+                        <div className="flex items-center gap-3 shrink-0 ml-4">
+                          <div className="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-lg"
+                            style={{ background: d.lightBg, color: d.color }}>
+                            <RiTimeLine className="text-xs" />
+                            {d.chatTime}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Quick facts */}
+                      <div className="flex gap-4 mb-3">
+                        {d.quickFacts.map((fact, i) => (
+                          <div key={i} className="flex items-center gap-1.5">
+                            <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: d.color }} />
+                            <span className="text-xs text-gray-500">{fact}</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Suggested questions */}
+                      <div className="flex gap-2 flex-wrap">
+                        {d.suggestedQuestions.map((q, i) => (
+                          <span key={i}
+                            className="text-xs px-2.5 py-1 rounded-lg border border-gray-100 text-gray-500 bg-gray-50">
+                            {q}
+                          </span>
+                        ))}
                       </div>
                     </div>
-                    <div className="px-5 pb-4">
-                      <div className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: d.color }}>
-                        Simulan ang Chat <RiArrowRightLine />
+
+                    {/* CTA */}
+                    <div className="flex items-center px-5 shrink-0">
+                      <div className="flex items-center gap-2 text-sm font-semibold" style={{ color: d.color }}>
+                        Simulan <RiArrowRightLine />
                       </div>
                     </div>
                   </motion.div>
                 ))}
-              </div>
+              </motion.div>
 
-              <div className="bg-white rounded-2xl p-5 border border-gray-100 flex items-center gap-4"
-                style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-                <RiShieldCheckLine className="text-[#1D9E75] text-2xl shrink-0" />
-                <div>
-                  <p className="text-sm font-medium text-gray-700">AI-powered na batay sa DOH Philippines at WHO guidelines</p>
-                  <p className="text-xs text-gray-400 mt-0.5">Para sa tamang diagnosis, kumonsulta pa rin sa lisensyadong doktor.</p>
+              {/* Bottom info row */}
+              <motion.div variants={fadeUp} className="grid grid-cols-3 gap-4">
+                <div className="bg-white rounded-2xl p-4 border border-gray-100 flex items-center gap-3"
+                  style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                  <RiShieldCheckLine className="text-[#1D9E75] text-2xl shrink-0" />
+                  <div>
+                    <p className="text-xs font-semibold text-gray-700">Batay sa DOH at WHO</p>
+                    <p className="text-xs text-gray-400 mt-0.5">Verified na impormasyon</p>
+                  </div>
                 </div>
-              </div>
+                <div className="bg-white rounded-2xl p-4 border border-gray-100 flex items-center gap-3"
+                  style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                  <RiStethoscopeLine className="text-[#534AB7] text-2xl shrink-0" />
+                  <div>
+                    <p className="text-xs font-semibold text-gray-700">Sa Filipino</p>
+                    <p className="text-xs text-gray-400 mt-0.5">Madaling maintindihan</p>
+                  </div>
+                </div>
+                <div className="bg-white rounded-2xl p-4 border border-gray-100 flex items-center gap-3"
+                  style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                  <RiAlarmWarningLine className="text-[#E65100] text-2xl shrink-0" />
+                  <div>
+                    <p className="text-xs font-semibold text-gray-700">Hindi diagnosis</p>
+                    <p className="text-xs text-gray-400 mt-0.5">Para sa gabay lamang</p>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Emergency hotlines */}
+              <motion.div variants={fadeUp}
+                className="mt-4 bg-red-50 border border-red-100 rounded-2xl p-4 flex items-center gap-6">
+                <div className="flex items-center gap-2 shrink-0">
+                  <RiAlarmWarningLine className="text-red-500 text-lg" />
+                  <p className="text-xs font-semibold text-red-600">Emergency Hotlines:</p>
+                </div>
+                {[
+                  { label: 'DOH Hotline', number: '1555' },
+                  { label: 'Red Cross', number: '143' },
+                  { label: 'NDRRMC', number: '911' },
+                  { label: 'NCMH', number: '1553' },
+                ].map((h, i) => (
+                  <div key={i} className="flex items-center gap-1.5">
+                    <span className="text-xs text-gray-500">{h.label}:</span>
+                    <span className="text-xs font-bold text-red-500">{h.number}</span>
+                  </div>
+                ))}
+              </motion.div>
+
             </motion.div>
           </div>
         )}
@@ -629,9 +571,16 @@ export default function Chatbot() {
                 <p className="text-sm font-semibold text-gray-900">{disease.label} Assistant</p>
                 <p className="text-xs text-gray-400">AI-powered • Batay sa DOH at WHO guidelines</p>
               </div>
-              <div className="flex items-center gap-1.5 text-xs text-[#1D9E75] font-medium">
-                <div className="w-1.5 h-1.5 rounded-full bg-[#1D9E75]" />
-                Online
+              <div className="flex items-center gap-1.5">
+                {/* Tip */}
+                <div className="flex items-center gap-2 bg-amber-50 border border-amber-100 rounded-xl px-3 py-1.5 max-w-xs">
+                  <RiInformationLine className="text-amber-500 text-sm shrink-0" />
+                  <p className="text-xs text-amber-700 truncate">{disease.tip}</p>
+                </div>
+                <div className="flex items-center gap-1.5 text-xs text-[#1D9E75] font-medium ml-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#1D9E75]" />
+                  Online
+                </div>
               </div>
             </div>
 
@@ -652,14 +601,11 @@ export default function Chatbot() {
                         <disease.icon className="text-white text-sm" />
                       </div>
                     )}
-                    <div className={`max-w-[75%] px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${msg.role === 'user'
-                      ? 'text-white rounded-tr-sm'
-                      : 'bg-white border border-gray-100 text-gray-700 rounded-tl-sm'
-                      }`}
+                    <div
+                      className={`max-w-[75%] px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${msg.role === 'user' ? 'text-white rounded-tr-sm' : 'bg-white border border-gray-100 text-gray-700 rounded-tl-sm'}`}
                       style={msg.role === 'user'
                         ? { background: disease.gradient }
-                        : { boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }
-                      }
+                        : { boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}
                     >
                       {msg.text}
                     </div>
@@ -669,11 +615,7 @@ export default function Chatbot() {
 
               {/* Typing indicator */}
               {isTyping && (
-                <motion.div
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex gap-3 items-center"
-                >
+                <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="flex gap-3 items-center">
                   <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
                     style={{ background: disease.gradient }}>
                     <disease.icon className="text-white text-sm" />
@@ -681,8 +623,7 @@ export default function Chatbot() {
                   <div className="bg-white border border-gray-100 rounded-2xl rounded-tl-sm px-4 py-3 flex gap-1.5"
                     style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
                     {[0, 1, 2].map(i => (
-                      <motion.div
-                        key={i}
+                      <motion.div key={i}
                         animate={{ opacity: [0.3, 1, 0.3], y: [0, -3, 0] }}
                         transition={{ duration: 1, repeat: Infinity, delay: i * 0.2 }}
                         className="w-2 h-2 rounded-full"
@@ -692,6 +633,24 @@ export default function Chatbot() {
                   </div>
                 </motion.div>
               )}
+
+              {/* Suggested questions — show only when messages is just 1 (opening message) */}
+              {messages.length === 1 && !isTyping && (
+                <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-2">
+                  <p className="text-xs text-gray-400 ml-11">Mga madalas na tanong:</p>
+                  <div className="flex flex-wrap gap-2 ml-11">
+                    {disease.suggestedQuestions.map((q, i) => (
+                      <button key={i}
+                        onClick={() => sendMessage(q)}
+                        className="text-xs px-3 py-2 rounded-xl border-2 text-left transition hover:scale-105"
+                        style={{ borderColor: disease.color, color: disease.color, background: disease.lightBg }}>
+                        {q}
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
               <div ref={chatEndRef} />
             </div>
 
@@ -710,7 +669,7 @@ export default function Chatbot() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={sendMessage}
+                  onClick={() => sendMessage()}
                   disabled={!input.trim() || isTyping}
                   className="w-8 h-8 rounded-xl flex items-center justify-center transition disabled:opacity-40"
                   style={{ background: disease.gradient }}
@@ -720,11 +679,9 @@ export default function Chatbot() {
               </div>
               <div className="flex items-center justify-between mt-2">
                 <p className="text-xs text-gray-400">Press Enter para magpadala</p>
-                <button
-                  onClick={() => navigate('/symptom-checker')}
+                <button onClick={() => navigate('/symptom-checker')}
                   className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-xl transition"
-                  style={{ background: disease.lightBg, color: disease.color }}
-                >
+                  style={{ background: disease.lightBg, color: disease.color }}>
                   <RiHospitalLine /> I-check ang symptoms
                 </button>
               </div>
