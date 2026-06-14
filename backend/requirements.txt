@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+pymongo
+python-dotenv
+google-generativeai
+langchain
+langchain-community
+langchain-core
+python-jose[cryptography]
+passlib[bcrypt]
+bcrypt
+langchain-google-genai
+sentence-transformers
+numpy
+scikit-learn
+ollama
