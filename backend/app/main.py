@@ -24,7 +24,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
-        "https://healthbridge-tau.vercel.app/",  
+        "https://healthbridge-tau.vercel.app",  
     ],
     allow_credentials=True,
     allow_methods=["*"],
