@@ -1,3 +1,10 @@
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+
 export default function Register() {
-  return <div>Register Page</div>
+  const navigate = useNavigate()
+  useEffect(() => {
+    navigate('/login', { state: { showRegister: true } })
+  }, [])
+  return null
 }

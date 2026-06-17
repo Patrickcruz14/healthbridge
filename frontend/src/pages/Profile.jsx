@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
@@ -10,6 +10,7 @@ import {
   RiDropLine, RiAlertLine, RiCheckLine,
   RiHistoryLine, RiChat1Line
 } from 'react-icons/ri'
+import API from '../services/api'
 
 const navItems = [
   { icon: RiHeartPulseLine, label: 'Dashboard', path: '/dashboard' },
@@ -36,24 +37,28 @@ const sexOptions = ['Lalaki', 'Babae', 'Ibang pagkakakilanlan', 'Ayaw sabihin']
 export default function Profile() {
   const navigate = useNavigate()
   const active = '/profile'
+  const [username] = useState(() => localStorage.getItem('username'))
 
   const [editingPersonal, setEditingPersonal] = useState(false)
   const [editingHealth, setEditingHealth] = useState(false)
   const [editingPassword, setEditingPassword] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [passwordError, setPasswordError] = useState('')
 
   const [personalInfo, setPersonalInfo] = useState({
-    firstName: 'Juan',
-    lastName: 'dela Cruz',
-    email: 'juan@email.com',
-    age: '28',
-    sex: 'Lalaki',
-    barangay: 'Batasan Hills',
-    city: 'Quezon City',
+    firstName: '',
+    lastName: '',
+    email: '',
+    age: '',
+    sex: '',
+    barangay: '',
+    city: '',
   })
 
   const [healthInfo, setHealthInfo] = useState({
-    bloodType: 'O+',
+    bloodType: 'Hindi alam',
     allergies: '',
     denguHistory: false,
     tbHistory: false,
@@ -67,12 +72,72 @@ export default function Profile() {
     confirm: '',
   })
 
-  const handleSave = (section) => {
-    setSaved(true)
-    if (section === 'personal') setEditingPersonal(false)
-    if (section === 'health') setEditingHealth(false)
-    if (section === 'password') setEditingPassword(false)
-    setTimeout(() => setSaved(false), 2500)
+  // Fetch profile on load
+  useEffect(() => {
+    if (!username) { navigate('/'); return }
+    API.get(`/profile/${username}`)
+      .then(res => {
+        const d = res.data
+        setPersonalInfo({
+          firstName: d.firstName || '',
+          lastName: d.lastName || '',
+          email: d.email || '',
+          age: d.age || '',
+          sex: d.sex || '',
+          barangay: d.barangay || '',
+          city: d.city || '',
+          profilePicture: d.profilePicture || '',
+        })
+        setHealthInfo({
+          bloodType: d.bloodType || 'Hindi alam',
+          allergies: d.allergies || '',
+          denguHistory: d.denguHistory || false,
+          tbHistory: d.tbHistory || false,
+          hypertensionHistory: d.hypertensionHistory || false,
+          currentMedications: d.currentMedications || '',
+        })
+      })
+      .catch(() => setError('Hindi ma-load ang profile.'))
+      .finally(() =>setLoading(false))
+  }, [username])
+
+  const handleSave = async (section) => {
+    setError('')
+    try {
+      if (section === 'personal') {
+        await API.put(`/profile/${username}`, personalInfo)
+        setEditingPersonal(false)
+      }
+      if (section === 'health') {
+        await API.put(`/profile/${username}`, healthInfo)
+        setEditingHealth(false)
+      }
+      if (section === 'password') {
+        setPasswordError('')
+        if (passwordInfo.new !== passwordInfo.confirm) {
+          setPasswordError('Hindi magkatugma ang bagong password.')
+          return
+        }
+        if (passwordInfo.new.length < 8) {
+          setPasswordError('Minimum 8 characters ang password.')
+          return
+        }
+        const res = await API.post(`/profile/${username}/change-password`, {
+          current_password: passwordInfo.current,
+          new_password: passwordInfo.new,
+        })
+        if (res.data.error) {
+          setPasswordError(res.data.error)
+          return
+        }
+        setPasswordInfo({ current: '', new: '', confirm: '' })
+        setEditingPassword(false)
+      }
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2500)
+    } catch {
+      setError('May error sa pag-save. Subukan ulit.')
+    }
   }
 
   const inputClass = (editing) =>
@@ -81,6 +146,12 @@ export default function Profile() {
         ? 'border-[#534AB7] bg-white text-gray-700 focus:ring-2 focus:ring-[#534AB7]/20'
         : 'border-gray-100 bg-gray-50 text-gray-600 cursor-default'
     }`
+
+  if (loading) return (
+    <div className="flex h-screen items-center justify-center bg-[#F4F3FF]">
+      <div className="w-8 h-8 border-2 border-[#534AB7] border-t-transparent rounded-full animate-spin" />
+    </div>
+  )
 
   return (
     <div className="flex min-h-screen bg-[#F4F3FF] font-sans">
@@ -111,7 +182,11 @@ export default function Profile() {
             })}
           </nav>
         </div>
-        <button onClick={() => navigate('/')}
+        <button onClick={() => {
+          localStorage.removeItem('token')
+          localStorage.removeItem('username')
+          navigate('/')
+        }}
           className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:bg-red-50 hover:text-red-500 transition-all">
           <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
             <RiLogoutBoxLine className="text-sm" />
@@ -122,8 +197,6 @@ export default function Profile() {
 
       {/* Main Content */}
       <div className="flex-1 overflow-y-auto px-8 py-8">
-
-        {/* Header */}
         <motion.div variants={stagger} initial="hidden" animate="show">
           <motion.div variants={fadeUp} className="mb-8">
             <div className="flex items-center gap-2 mb-1">
@@ -133,6 +206,12 @@ export default function Profile() {
             <p className="text-sm text-gray-400">I-manage ang iyong personal at health information.</p>
           </motion.div>
 
+          {error && (
+            <div className="mb-4 px-4 py-3 rounded-xl text-sm text-red-600 bg-red-50 border border-red-100">
+              {error}
+            </div>
+          )}
+
           {/* Profile Hero Card */}
           <motion.div variants={fadeUp}
             className="rounded-2xl p-6 mb-6 flex items-center gap-6 relative overflow-hidden"
@@ -140,36 +219,65 @@ export default function Profile() {
             <div className="absolute top-[-30px] right-[-30px] w-48 h-48 rounded-full bg-white/10" />
             <div className="absolute bottom-[-20px] right-[80px] w-28 h-28 rounded-full bg-white/5" />
 
-            {/* Avatar */}
             <div className="relative shrink-0">
-              <div className="w-20 h-20 rounded-2xl bg-white/20 flex items-center justify-center border-2 border-white/30">
-                <span className="text-white text-3xl font-bold">
-                  {personalInfo.firstName[0]}{personalInfo.lastName[0]}
+              <div className="w-20 h-20 rounded-2xl bg-white/20 flex items-center justify-center border-2 border-white/30 overflow-hidden">
+                {personalInfo.profilePicture
+                  ? <img src={personalInfo.profilePicture} alt="profile" className="w-full h-full object-cover" />
+                  : <span className="text-white text-3xl font-bold">
+                     {personalInfo.firstName?.[0] || '?'}{personalInfo.lastName?.[0] || ''}
                 </span>
+}
               </div>
-              <button className="absolute -bottom-1 -right-1 w-7 h-7 bg-white rounded-lg flex items-center justify-center shadow-md hover:bg-gray-50 transition">
+              <button onClick={() => document.getElementById('profile-pic-input').click()} className="absolute -bottom-1 -right-1 w-7 h-7 bg-white rounded-lg flex items-center justify-center shadow-md hover:bg-gray-50 transition">
                 <RiCameraLine className="text-[#534AB7] text-sm" />
               </button>
+              <input
+                id="profile-pic-input"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={async (e) => {
+                  const file = e.target.files[0]
+                  if (!file) return
+                  const formData = new FormData()
+                  formData.append('file', file)
+                  try {
+                    const res = await API.post(`/upload/profile-picture/${username}`, formData, {
+                      headers: { 'Content-Type': 'multipart/form-data' }
+                   })
+                   if (res.data.url) {
+                    setPersonalInfo(prev => ({ ...prev, profilePicture: res.data.url }))
+                    await API.put(`/profile/${username}`, { profilePicture: res.data.url })
+                    setSaved(true)
+                    setTimeout(() => setSaved(false), 2500)
+                  }
+                } catch {
+                  setError('Hindi ma-upload ang picture. Subukan ulit.')
+                 }
+                }}
+                />
             </div>
 
-            {/* Info */}
             <div className="flex-1 relative z-10">
               <h2 className="text-white font-semibold text-xl">{personalInfo.firstName} {personalInfo.lastName}</h2>
               <p className="text-white/70 text-sm mt-0.5">{personalInfo.email}</p>
-              <div className="flex items-center gap-3 mt-3">
-                <span className="text-xs bg-white/20 text-white px-3 py-1 rounded-lg">
-                  {personalInfo.barangay}, {personalInfo.city}
-                </span>
-                <span className="text-xs bg-white/20 text-white px-3 py-1 rounded-lg">
-                  {personalInfo.age} taong gulang
-                </span>
+              <div className="flex items-center gap-3 mt-3 flex-wrap">
+                {personalInfo.barangay && (
+                  <span className="text-xs bg-white/20 text-white px-3 py-1 rounded-lg">
+                    {personalInfo.barangay}{personalInfo.city ? `, ${personalInfo.city}` : ''}
+                  </span>
+                )}
+                {personalInfo.age && (
+                  <span className="text-xs bg-white/20 text-white px-3 py-1 rounded-lg">
+                    {personalInfo.age} taong gulang
+                  </span>
+                )}
                 <span className="text-xs bg-white/20 text-white px-3 py-1 rounded-lg">
                   Blood Type: {healthInfo.bloodType}
                 </span>
               </div>
             </div>
 
-            {/* Save toast */}
             {saved && (
               <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                 className="absolute top-4 right-4 flex items-center gap-2 bg-white text-[#1D9E75] text-xs font-semibold px-3 py-2 rounded-xl shadow-lg">
@@ -179,8 +287,6 @@ export default function Profile() {
           </motion.div>
 
           <div className="grid grid-cols-3 gap-6">
-
-            {/* Left Column */}
             <div className="col-span-2 flex flex-col gap-6">
 
               {/* Personal Info */}
@@ -197,75 +303,37 @@ export default function Profile() {
                     {editingPersonal ? <><RiSaveLine /> I-save</> : <><RiEditLine /> I-edit</>}
                   </button>
                 </div>
-
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-xs font-medium text-gray-500 mb-1.5 block">First Name</label>
-                    <input
-                      value={personalInfo.firstName}
-                      onChange={e => setPersonalInfo({ ...personalInfo, firstName: e.target.value })}
-                      disabled={!editingPersonal}
-                      className={inputClass(editingPersonal)}
-                    />
+                    <input value={personalInfo.firstName} onChange={e => setPersonalInfo({ ...personalInfo, firstName: e.target.value })} disabled={!editingPersonal} className={inputClass(editingPersonal)} />
                   </div>
                   <div>
                     <label className="text-xs font-medium text-gray-500 mb-1.5 block">Last Name</label>
-                    <input
-                      value={personalInfo.lastName}
-                      onChange={e => setPersonalInfo({ ...personalInfo, lastName: e.target.value })}
-                      disabled={!editingPersonal}
-                      className={inputClass(editingPersonal)}
-                    />
+                    <input value={personalInfo.lastName} onChange={e => setPersonalInfo({ ...personalInfo, lastName: e.target.value })} disabled={!editingPersonal} className={inputClass(editingPersonal)} />
                   </div>
                   <div>
                     <label className="text-xs font-medium text-gray-500 mb-1.5 block">Email</label>
-                    <input
-                      type="email"
-                      value={personalInfo.email}
-                      onChange={e => setPersonalInfo({ ...personalInfo, email: e.target.value })}
-                      disabled={!editingPersonal}
-                      className={inputClass(editingPersonal)}
-                    />
+                    <input type="email" value={personalInfo.email} onChange={e => setPersonalInfo({ ...personalInfo, email: e.target.value })} disabled={!editingPersonal} className={inputClass(editingPersonal)} />
                   </div>
                   <div>
                     <label className="text-xs font-medium text-gray-500 mb-1.5 block">Age</label>
-                    <input
-                      type="number"
-                      value={personalInfo.age}
-                      onChange={e => setPersonalInfo({ ...personalInfo, age: e.target.value })}
-                      disabled={!editingPersonal}
-                      className={inputClass(editingPersonal)}
-                    />
+                    <input type="number" value={personalInfo.age} onChange={e => setPersonalInfo({ ...personalInfo, age: e.target.value })} disabled={!editingPersonal} className={inputClass(editingPersonal)} />
                   </div>
                   <div>
                     <label className="text-xs font-medium text-gray-500 mb-1.5 block">Sex</label>
-                    <select
-                      value={personalInfo.sex}
-                      onChange={e => setPersonalInfo({ ...personalInfo, sex: e.target.value })}
-                      disabled={!editingPersonal}
-                      className={inputClass(editingPersonal)}>
+                    <select value={personalInfo.sex} onChange={e => setPersonalInfo({ ...personalInfo, sex: e.target.value })} disabled={!editingPersonal} className={inputClass(editingPersonal)}>
+                      <option value="">Pumili...</option>
                       {sexOptions.map(s => <option key={s}>{s}</option>)}
                     </select>
                   </div>
                   <div>
                     <label className="text-xs font-medium text-gray-500 mb-1.5 block">Barangay</label>
-                    <input
-                      value={personalInfo.barangay}
-                      onChange={e => setPersonalInfo({ ...personalInfo, barangay: e.target.value })}
-                      disabled={!editingPersonal}
-                      placeholder="e.g. Batasan Hills"
-                      className={inputClass(editingPersonal)}
-                    />
+                    <input value={personalInfo.barangay} onChange={e => setPersonalInfo({ ...personalInfo, barangay: e.target.value })} disabled={!editingPersonal} placeholder="e.g. Batasan Hills" className={inputClass(editingPersonal)} />
                   </div>
                   <div className="col-span-2">
                     <label className="text-xs font-medium text-gray-500 mb-1.5 block">City / Municipality</label>
-                    <input
-                      value={personalInfo.city}
-                      onChange={e => setPersonalInfo({ ...personalInfo, city: e.target.value })}
-                      disabled={!editingPersonal}
-                      placeholder="e.g. Quezon City"
-                      className={inputClass(editingPersonal)}
-                    />
+                    <input value={personalInfo.city} onChange={e => setPersonalInfo({ ...personalInfo, city: e.target.value })} disabled={!editingPersonal} placeholder="e.g. Quezon City" className={inputClass(editingPersonal)} />
                   </div>
                 </div>
               </motion.div>
@@ -284,41 +352,22 @@ export default function Profile() {
                     {editingHealth ? <><RiSaveLine /> I-save</> : <><RiEditLine /> I-edit</>}
                   </button>
                 </div>
-
                 <div className="grid grid-cols-2 gap-4 mb-5">
                   <div>
                     <label className="text-xs font-medium text-gray-500 mb-1.5 block">Blood Type</label>
-                    <select
-                      value={healthInfo.bloodType}
-                      onChange={e => setHealthInfo({ ...healthInfo, bloodType: e.target.value })}
-                      disabled={!editingHealth}
-                      className={inputClass(editingHealth)}>
+                    <select value={healthInfo.bloodType} onChange={e => setHealthInfo({ ...healthInfo, bloodType: e.target.value })} disabled={!editingHealth} className={inputClass(editingHealth)}>
                       {bloodTypes.map(b => <option key={b}>{b}</option>)}
                     </select>
                   </div>
                   <div>
                     <label className="text-xs font-medium text-gray-500 mb-1.5 block">Known Allergies</label>
-                    <input
-                      value={healthInfo.allergies}
-                      onChange={e => setHealthInfo({ ...healthInfo, allergies: e.target.value })}
-                      disabled={!editingHealth}
-                      placeholder="e.g. Penicillin, Peanuts"
-                      className={inputClass(editingHealth)}
-                    />
+                    <input value={healthInfo.allergies} onChange={e => setHealthInfo({ ...healthInfo, allergies: e.target.value })} disabled={!editingHealth} placeholder="e.g. Penicillin, Peanuts" className={inputClass(editingHealth)} />
                   </div>
                   <div className="col-span-2">
                     <label className="text-xs font-medium text-gray-500 mb-1.5 block">Current Medications</label>
-                    <input
-                      value={healthInfo.currentMedications}
-                      onChange={e => setHealthInfo({ ...healthInfo, currentMedications: e.target.value })}
-                      disabled={!editingHealth}
-                      placeholder="e.g. Amlodipine 5mg, Metformin"
-                      className={inputClass(editingHealth)}
-                    />
+                    <input value={healthInfo.currentMedications} onChange={e => setHealthInfo({ ...healthInfo, currentMedications: e.target.value })} disabled={!editingHealth} placeholder="e.g. Amlodipine 5mg, Metformin" className={inputClass(editingHealth)} />
                   </div>
                 </div>
-
-                {/* Pre-existing conditions */}
                 <div>
                   <label className="text-xs font-medium text-gray-500 mb-3 block">Pre-existing Conditions / History</label>
                   <div className="flex flex-col gap-2">
@@ -327,8 +376,7 @@ export default function Profile() {
                       { key: 'tbHistory', label: 'Tuberculosis (TB) History', icon: RiLungsLine, color: '#534AB7', bg: '#EEEDFE' },
                       { key: 'hypertensionHistory', label: 'Hypertension (Mataas na BP)', icon: RiHeartLine, color: '#E65100', bg: '#FFF3E0' },
                     ].map((condition) => (
-                      <div
-                        key={condition.key}
+                      <div key={condition.key}
                         onClick={() => editingHealth && setHealthInfo({ ...healthInfo, [condition.key]: !healthInfo[condition.key] })}
                         className={`flex items-center gap-3 p-3 rounded-xl border-2 transition-all ${editingHealth ? 'cursor-pointer' : 'cursor-default'} ${healthInfo[condition.key] ? 'border-transparent' : 'border-gray-100 bg-gray-50'}`}
                         style={healthInfo[condition.key] ? { background: condition.bg, borderColor: condition.color + '40' } : {}}>
@@ -336,14 +384,11 @@ export default function Profile() {
                           style={{ background: healthInfo[condition.key] ? condition.bg : '#F3F4F6' }}>
                           <condition.icon className="text-sm" style={{ color: healthInfo[condition.key] ? condition.color : '#9CA3AF' }} />
                         </div>
-                        <span className="text-sm font-medium flex-1"
-                          style={{ color: healthInfo[condition.key] ? condition.color : '#6B7280' }}>
+                        <span className="text-sm font-medium flex-1" style={{ color: healthInfo[condition.key] ? condition.color : '#6B7280' }}>
                           {condition.label}
                         </span>
-                        <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all`}
-                          style={healthInfo[condition.key]
-                            ? { background: condition.color, borderColor: condition.color }
-                            : { borderColor: '#D1D5DB' }}>
+                        <div className="w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all"
+                          style={healthInfo[condition.key] ? { background: condition.color, borderColor: condition.color } : { borderColor: '#D1D5DB' }}>
                           {healthInfo[condition.key] && <RiCheckLine className="text-white text-xs" />}
                         </div>
                       </div>
@@ -366,7 +411,6 @@ export default function Profile() {
                     {editingPassword ? <><RiSaveLine /> I-save</> : <><RiEditLine /> Baguhin</>}
                   </button>
                 </div>
-
                 {!editingPassword ? (
                   <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-gray-100">
                     <RiLockLine className="text-gray-400 text-lg shrink-0" />
@@ -377,6 +421,11 @@ export default function Profile() {
                   </div>
                 ) : (
                   <div className="flex flex-col gap-3">
+                    {passwordError && (
+                      <div className="px-4 py-3 rounded-xl text-sm text-red-600 bg-red-50 border border-red-100">
+                        {passwordError}
+                      </div>
+                    )}
                     {[
                       { key: 'current', label: 'Current Password', placeholder: 'Ilagay ang kasalukuyang password' },
                       { key: 'new', label: 'New Password', placeholder: 'Bagong password (min. 8 characters)' },
@@ -400,8 +449,6 @@ export default function Profile() {
 
             {/* Right Column */}
             <div className="col-span-1 flex flex-col gap-5">
-
-              {/* Health Summary Card */}
               <motion.div variants={fadeUp} className="bg-white rounded-2xl p-5 border border-gray-100"
                 style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
                 <h2 className="text-sm font-semibold text-gray-800 mb-4">Health Summary</h2>
@@ -443,17 +490,17 @@ export default function Profile() {
                 </div>
               </motion.div>
 
-              {/* Activity Placeholder */}
               <motion.div variants={fadeUp} className="bg-white rounded-2xl p-5 border border-gray-100"
                 style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
                 <h2 className="text-sm font-semibold text-gray-800 mb-1">Activity History</h2>
                 <p className="text-xs text-gray-400 mb-4">Chat at symptom check history</p>
                 <div className="flex flex-col gap-3">
                   {[
-                    { icon: RiChat1Line, label: 'Chat History', desc: 'Mga nakaraang usapan sa chatbot', color: '#534AB7', bg: '#EEEDFE' },
-                    { icon: RiHistoryLine, label: 'Symptom Checks', desc: 'Mga nakaraang symptom check', color: '#1D9E75', bg: '#E1F5EE' },
+                    { icon: RiChat1Line, label: 'Chat History', desc: 'Mga nakaraang usapan sa chatbot', color: '#534AB7', bg: '#EEEDFE', path: '/chatbot' },
+                    { icon: RiHistoryLine, label: 'Symptom Checks', desc: 'Mga nakaraang symptom check', color: '#1D9E75', bg: '#E1F5EE', path: '/symptom-checker' },
                   ].map((item, i) => (
-                    <div key={i} className="flex items-center gap-3 p-3 rounded-xl border border-dashed border-gray-200 bg-gray-50">
+                    <div key={i} onClick={() => navigate(item.path)}
+                      className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 bg-gray-50 cursor-pointer hover:bg-gray-100 transition">
                       <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: item.bg }}>
                         <item.icon className="text-sm" style={{ color: item.color }} />
                       </div>
@@ -461,14 +508,11 @@ export default function Profile() {
                         <p className="text-xs font-medium text-gray-600">{item.label}</p>
                         <p className="text-xs text-gray-400">{item.desc}</p>
                       </div>
-                      <span className="text-xs bg-gray-100 text-gray-400 px-2 py-0.5 rounded-lg">Coming soon</span>
                     </div>
                   ))}
                 </div>
-                <p className="text-xs text-gray-400 mt-3 text-center">I-connect sa Django backend later</p>
               </motion.div>
 
-              {/* DOH Reminder */}
               <motion.div variants={fadeUp}
                 className="rounded-2xl p-4 flex items-start gap-3"
                 style={{ background: 'linear-gradient(135deg, #534AB7 0%, #7B6FD4 100%)' }}>

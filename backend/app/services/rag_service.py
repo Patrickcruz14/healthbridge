@@ -1,49 +1,27 @@
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
-
 from app.database.mongodb import db
 
-model = SentenceTransformer(
-    "all-MiniLM-L6-v2"
-)
+model = SentenceTransformer("all-MiniLM-L6-v2")
 
-
-def retrieve_context(
-    disease: str,
-    question: str
-):
-
+def retrieve_context(disease: str, question: str):
     collection_name = f"{disease.lower()}_vectors"
-
     collection = db[collection_name]
-
-    docs = list(
-        collection.find({})
-    )
+    docs = list(collection.find({}))
 
     if not docs:
         return ""
 
-    question_vector = model.encode(
-        question
-    ).reshape(1, -1)
+    question_vector = model.encode(question).reshape(1, -1)
 
-    best_score = -1
-    best_context = ""
-
+    scored = []
     for doc in docs:
+        score = cosine_similarity(question_vector, [doc["embedding"]])[0][0]
+        scored.append((score, doc["content"]))
 
-        doc_vector = [doc["embedding"]]
+    scored.sort(key=lambda x: x[0], reverse=True)
 
-        score = cosine_similarity(
-            question_vector,
-            doc_vector
-        )[0][0]
+    threshold = 0.3
+    top3 = [content for score, content in scored[:3] if score >= threshold]
 
-        if score > best_score:
-
-            best_score = score
-
-            best_context = doc["content"]
-
-    return best_context
+    return "\n\n".join(top3)
