@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { RiRobot2Line, RiHospitalLine, RiMapPin2Line, RiArrowRightLine, RiHeartPulseLine, RiShieldCheckLine, RiBookOpenLine, RiCheckLine } from 'react-icons/ri'
- 
+import heroImage from '../assets/hero.jpg'
+
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
   show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } }
@@ -101,7 +102,7 @@ export default function Landing() {
           transition={{ duration: 0.6, ease: 'easeOut', delay: 0.2 }}
         >
           <img
-            src="/src/assets/hero.jpg"
+            src={heroImage}
             alt="HealthBridge illustration"
             className="w-[500px] object-contain"
           />
