@@ -16,4 +16,4 @@ numpy==1.26.4
 cloudinary==1.40.0
 python-multipart==0.0.9
 --extra-index-url https://download.pytorch.org/whl/cpu
-torch==2.3.0+cpu
+torch==2.12.1+cpu
