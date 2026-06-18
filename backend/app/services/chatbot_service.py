@@ -44,36 +44,41 @@ def generate_suggested_questions(disease: str, bot_reply: str, history: list = [
         "messages": [
             {
                 "role": "system",
-                "content": f"""Ikaw ay isang health assistant na espesyalista sa {disease}.
-Bumuo ng exactly 3 SHORT suggested replies na DIREKTA sa huling sinabi ng bot.
-RULES:
-- First person ng user — ako, ko, akin
-- HINDI tanong — statements o sagot lang
-- DIREKTA sa huling tanong ng bot — kung nagtanong ng BP, may BP number ang sagot
-- NATURAL na Tagalog — walang paulit-ulit na salita
-- MAX 10 words bawat reply
-- HUWAG ulitin ang nasa history na
+                "content": f"""Bumuo ng exactly 3 suggested na mensahe para sa user na mag-i-click bilang sagot sa bot tungkol sa {disease}.
 
-HALIMBAWA:
-Kung nagtanong ang bot ng BP reading:
-"150/90 ang BP ko kahapon"
-"Hindi pa ako nagsusukod ng BP"
-"Mga 160/100 ang BP ko ngayon"
+PANUNTUNAN:
+- Purong Tagalog — bawal mag-mix ng English maliban sa medical terms (BP, hypertension, dengue, TB)
+- Natural na pakikipag-usap — parang kaibigan nagsasalita, hindi robotic
+- DIREKTA sa huling sinabi ng bot — kung nagtanong ng BP, may BP number; kung nagtanong ng sintomas, may sintomas
+- TATLONG MAGKAKAIBANG OPSYON — isa may sintomas/positibo, isa walang sintomas/negatibo, isa hindi pa nasusukat/hindi sigurado
+- First person — ako, ko, akin
+- MAX 8 salita bawat suggestion
+- HUWAG mag-ulit ng salita sa loob ng iisang suggestion
+- HUWAG gumamit ng "nararamdaman" nang paulit-ulit
+- Isulat lang ang 3 suggestions, isa sa bawat linya, walang numbering, walang bullet, walang label
 
-Kung nagtanong ng symptoms:
-"Masakit ang ulo ko at nahihilo"
-"Wala akong nararamdamang sintomas"
-"Minsan lang sumasakit ang ulo ko"
+HALIMBAWA kung nagtanong ng BP:
+Mga 150/90 ang BP ko ngayon
+Hindi pa ako nakasukat ng BP
+Normal lang ang BP ko kahapon
 
-Isulat lang ang 3 replies, isa sa bawat linya, walang numbering, walang bullet."""
+HALIMBAWA kung nagtanong ng sintomas:
+Masakit ang ulo ko at nahihilo
+Wala akong nararamdaman ngayon
+Hindi ko sigurado kung may sintomas ako
+
+HALIMBAWA kung nagtanong ng gamot:
+Umiinom na ako ng gamot para sa BP
+Wala pa akong gamot na inuumin
+Minsan lang ako umiinom ng gamot"""
             },
             {
                 "role": "user",
                 "content": f"{history_summary}\nSagot ng bot: {bot_reply}\n\nBumuo ng 3 suggested replies ng user:"
             }
         ],
-        "temperature": 0.5,
-        "max_tokens": 100
+        "temperature": 0.3,
+        "max_tokens": 120
     }
     try:
         data = groq_request(payload, headers)
@@ -111,14 +116,14 @@ def chat_with_bot(username: str, disease: str, message: str, history: list = [],
 
     messages = []
     messages.append({"role": "system", "content": system_prompt})
-    messages.extend(history[-6:])  # last 6 messages lang para mababa ang tokens
+    messages.extend(history[-6:])
     messages.append({"role": "user", "content": message})
 
     payload = {
         "model": "llama-3.1-8b-instant",
         "messages": messages,
         "temperature": 0.3,
-        "max_tokens": 512  # binaba mula 1024
+        "max_tokens": 512
     }
 
     data = groq_request(payload, headers)
