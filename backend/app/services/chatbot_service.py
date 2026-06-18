@@ -28,6 +28,48 @@ def groq_request(payload, headers, retries=3):
         raise Exception(f"Groq API error: {data.get('error', data)}")
     raise Exception("Rate limit — subukan ulit mamaya")
 
+def clean_suggestions(questions: list, disease: str) -> list:
+    """Mag-validate ng suggestions: word limit, banned phrases, fallback kung kulang."""
+    BANNED_PHRASES = ["ako ay", "mabuti na lang", "experiencing", "duration"]
+    DISEASE_WRONG_SYMPTOMS = {
+        "dengue": ["umuubo", "ubo", "dumudugo sa baga"],
+        "tb": ["pantal", "lagnat ng dengue", "platelet"],
+        "hypertension": ["pantal", "umuubo", "ubo"],
+    }
+    wrong_symptoms = DISEASE_WRONG_SYMPTOMS.get(disease.lower(), [])
+    MAX_WORDS = 10
+
+    disease_fallbacks = {
+        "tb": ["Mga isang buwan na akong umuubo", "Wala akong ubo, curious lang ako", "May dugo sa luwa ko minsan"],
+        "dengue": ["May lagnat ako tatlong araw na", "Wala akong lagnat, tanong lang", "Masakit ang ulo ko ngayon"],
+        "hypertension": ["Mga 150/90 ang BP ko", "Hindi pa ako nakasukat ng BP", "Normal naman BP ko dati"],
+    }
+    fallback_pool = disease_fallbacks.get(disease.lower(), [
+        "May nararamdaman akong hindi normal",
+        "Wala akong sintomas ngayon",
+        "Gusto ko lang malaman para sigurado",
+    ])
+
+    cleaned = []
+    for q in questions:
+        q = q.strip().strip('"').strip("'")
+        if not q:
+            continue
+        word_count = len(q.split())
+        has_banned = any(bp in q.lower() for bp in BANNED_PHRASES)
+        has_wrong = any(ws in q.lower() for ws in wrong_symptoms)
+        if word_count <= MAX_WORDS and not has_banned and not has_wrong:
+            cleaned.append(q)
+
+    # Kung kulang sa 3 valid suggestions, punan ng fallback (walang duplicate)
+    i = 0
+    while len(cleaned) < 3 and i < len(fallback_pool):
+        if fallback_pool[i] not in cleaned:
+            cleaned.append(fallback_pool[i])
+        i += 1
+
+    return cleaned[:3]
+
 def generate_suggested_questions(disease: str, bot_reply: str, history: list = []) -> list:
     history_summary = ""
     if history:
@@ -40,7 +82,7 @@ def generate_suggested_questions(disease: str, bot_reply: str, history: list = [
         "Content-Type": "application/json"
     }
     payload = {
-        "model": "llama-3.1-8b-instant",
+        "model": "meta-llama/llama-4-scout-17b-16e-instruct",
         "messages": [
             {
                 "role": "system",
@@ -52,9 +94,12 @@ PANUNTUNAN:
 - DIREKTA sa huling sinabi ng bot — kung nagtanong ng BP, may BP number; kung nagtanong ng sintomas, may sintomas
 - TATLONG MAGKAKAIBANG OPSYON — isa may sintomas/positibo, isa walang sintomas/negatibo, isa hindi pa nasusukat/hindi sigurado
 - First person — ako, ko, akin
-- MAX 8 salita bawat suggestion
+- ISANG SIMPLENG SENTENCE LANG bawat suggestion — HUWAG gumamit ng tuldok (.) sa gitna, HUWAG sumulat ng dalawang sentences
+- STRICT MAX 8 salita bawat suggestion — bilangin ang mga salita
+- HUWAG i-ulit o i-echo ang eksaktong mga salita ng huling mensahe ng user — bumuo ng bagong pananaw
+- HUWAG gumamit ng "Mabuti na lang" — hindi angkop sa may sakit
+- HUWAG sumulat ng nagkokontradiksyon na pangungusap (hal. "wala akong nararamdaman... pero 3 araw na" — kontra ito sa isa't isa)
 - HUWAG mag-ulit ng salita sa loob ng iisang suggestion
-- HUWAG gumamit ng "nararamdaman" nang paulit-ulit
 - Isulat lang ang 3 suggestions, isa sa bawat linya, walang numbering, walang bullet, walang label
 
 HALIMBAWA kung nagtanong ng BP:
@@ -62,15 +107,20 @@ Mga 150/90 ang BP ko ngayon
 Hindi pa ako nakasukat ng BP
 Normal lang ang BP ko kahapon
 
-HALIMBAWA kung nagtanong ng sintomas:
+HALIMBAWA kung nagtanong ng sintomas o ilang araw na:
 Masakit ang ulo ko at nahihilo
-Wala akong nararamdaman ngayon
-Hindi ko sigurado kung may sintomas ako
+Wala akong sintomas, tanong lang ako
+Tatlong araw na rin akong umuubo
 
 HALIMBAWA kung nagtanong ng gamot:
 Umiinom na ako ng gamot para sa BP
 Wala pa akong gamot na inuumin
-Minsan lang ako umiinom ng gamot"""
+Minsan lang ako umiinom ng gamot
+
+HALIMBAWA kung nagtanong kung kumakain/may appetite:
+Kumakain ako pero kaunti lang
+Ayaw kumain, nasusuka ako
+Normal naman ang kain ko ngayon"""
             },
             {
                 "role": "user",
@@ -83,10 +133,10 @@ Minsan lang ako umiinom ng gamot"""
     try:
         data = groq_request(payload, headers)
         text = data["choices"][0]["message"]["content"]
-        questions = [q.strip() for q in text.strip().split('\n') if q.strip()][:3]
-        return questions
+        questions = [q.strip() for q in text.strip().split('\n') if q.strip()][:5]
+        return clean_suggestions(questions, disease)
     except:
-        return []
+        return clean_suggestions([], disease)
 
 def chat_with_bot(username: str, disease: str, message: str, history: list = [], skip_save: bool = False, idempotency_key: str = None):
 
@@ -120,7 +170,7 @@ def chat_with_bot(username: str, disease: str, message: str, history: list = [],
     messages.append({"role": "user", "content": message})
 
     payload = {
-        "model": "llama-3.1-8b-instant",
+        "model": "meta-llama/llama-4-scout-17b-16e-instruct",
         "messages": messages,
         "temperature": 0.3,
         "max_tokens": 512
@@ -128,6 +178,23 @@ def chat_with_bot(username: str, disease: str, message: str, history: list = [],
 
     data = groq_request(payload, headers)
     bot_reply = data["choices"][0]["message"]["content"]
+    import re
+    # Remove banned openers
+    banned_openers = ["Mabuti na lang", "Nabahala ako", "Okay lang yan", "Okay lang 'yan"]
+    for opener in banned_openers:
+        if bot_reply.startswith(opener):
+            bot_reply = re.sub(r'^.*?[.!]\s*', '', bot_reply, count=1).strip()
+    sentences = re.split(r'(?<=[?!.])\s+', bot_reply.strip())
+    question_count = 0
+    filtered = []
+    for sent in sentences:
+        if '?' in sent:
+            if question_count == 0:
+                filtered.append(sent)
+                question_count += 1
+        else:
+            filtered.append(sent)
+    bot_reply = ' '.join(filtered).strip()
     suggested_questions = generate_suggested_questions(disease, bot_reply, history)
 
     if not skip_save:
