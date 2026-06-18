@@ -260,7 +260,7 @@ export default function Landing() {
       <section className="mx-16 my-10 bg-[#534AB7] rounded-2xl px-12 py-12 flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-semibold text-white mb-2">
-            Handa ka na bang mag-alagaan ng iyong kalusugan?
+            Handa ka na bang alagaan ang iyong kalusugan?
           </h2>
           <p className="text-[#EEEDFE] text-sm">
             Libre. Madaling gamitin. Para sa bawat Pilipino.

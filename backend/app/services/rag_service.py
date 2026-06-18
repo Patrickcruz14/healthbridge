@@ -21,7 +21,7 @@ def retrieve_context(disease: str, question: str):
 
     scored.sort(key=lambda x: x[0], reverse=True)
 
-    threshold = 0.3
+    threshold = 0.45
     top3 = [content for score, content in scored[:3] if score >= threshold]
 
     return "\n\n".join(top3)
