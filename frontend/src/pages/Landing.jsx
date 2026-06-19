@@ -25,7 +25,7 @@ export default function Landing() {
           <div className="w-8 h-8 rounded-full bg-[#534AB7] flex items-center justify-center">
             <RiHeartPulseLine className="text-white text-sm" />
           </div>
-          <span className="text-[#534AB7] font-semibold text-lg">FinalProject</span>
+          <span className="text-[#534AB7] font-semibold text-lg">HealthBridge</span>
         </div>
         <div className="flex items-center gap-6 text-sm text-gray-500">
           <span className="cursor-pointer hover:text-[#534AB7] transition">Features</span>
